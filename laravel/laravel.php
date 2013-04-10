@@ -146,6 +146,23 @@ foreach ($languages as $language)
 		$uri = trim(substr($uri, strlen($language)), '/'); break;
 	}
 }
+/*
+|---------------------------------------------------------------------------
+| Allow the creation of arbitrary URI tokens
+|---------------------------------------------------------------------------
+| 
+|
+*/
+$newuri = explode("/",$uri);
+$tokenID = 0;
+while ($token = array_shift($newuri)) {
+	if (empty($token)) break;
+	$e = Event::until("laravel.uri.token: $tokenID", array(strtolower($uriToken)));
+	if (!$e) break;
+	$tokenID++;
+}
+if (count($newuri) == 0) $uri = "";
+else $uri = implode("/",$newuri);
 
 if ($uri == '') $uri = '/';
 
